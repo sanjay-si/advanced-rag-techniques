@@ -1,7 +1,7 @@
 from helper_utils import project_embeddings, word_wrap
 from pypdf import PdfReader
 import os
-from openai import OpenAI
+import openai
 from dotenv import load_dotenv
 
 
@@ -14,14 +14,13 @@ import umap
 load_dotenv()
 
 openai_key = os.getenv("OPENAI_API_KEY")
-client = OpenAI(api_key=openai_key)
+openai.api_key = openai_key
 
 reader = PdfReader("data/microsoft-annual-report.pdf")
 pdf_texts = [p.extract_text().strip() for p in reader.pages]
 
 # Filter the empty strings
 pdf_texts = [text for text in pdf_texts if text]
-
 
 from langchain.text_splitter import (
     RecursiveCharacterTextSplitter,
@@ -91,7 +90,7 @@ def generate_multi_query(query, model="gpt-3.5-turbo"):
         {"role": "user", "content": query},
     ]
 
-    response = client.chat.completions.create(
+    response = openai.ChatCompletion.create(
         model=model,
         messages=messages,
     )
